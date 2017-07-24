@@ -5,6 +5,7 @@
 # Logs
 logs
 *.log
+.node*
 
 # dependencies
 node_modules

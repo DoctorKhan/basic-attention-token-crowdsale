@@ -53,7 +53,7 @@ class App extends Component {
     // Get accounts.
     this.state.web3.eth.getAccounts(async (e, accounts) => {
       let instance = await simpleStorage.deployed();
-      await instance.set(33, {from: accounts[0]});
+      await instance.set(3, {from: accounts[0]});
       let result   = await instance.get.call(accounts[0]);
       return         await this.setState({ storageValue: result.c[0] });
     })

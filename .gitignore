@@ -1,4 +1,10 @@
-# See http://help.github.com/ignore-files/ for more about ignoring files.
+*~
+*#
+.#*
+.*.swp
+# Logs
+logs
+*.log
 
 # dependencies
 node_modules
@@ -9,9 +15,16 @@ coverage
 # production
 build
 build_webpack
+dist
 
 # misc
 .DS_Store
 .env
 npm-debug.log
 .truffle-solidity-loader
+package-lock.json
+
+# Generated files
+config/development/contracts.json
+config/development/*.sol.js
+config/test/contracts.json

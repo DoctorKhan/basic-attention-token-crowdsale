@@ -6,7 +6,7 @@ import './css/oswald.css'
 import './css/open-sans.css'
 import './css/pure-min.css'
 import './App.css'
-import './middleware/rezcoin.js'
+import * as rezcoin from './middleware/rezcoin.js'
 
 class App extends Component {
   constructor(props) {
@@ -14,6 +14,7 @@ class App extends Component {
 
     this.state = {
       storageValue: 0,
+      tokenBalance: 0,
       web3: null
     }
   }
@@ -58,6 +59,12 @@ class App extends Component {
       let result   = await instance.get.call(accounts[0]);
       return         await this.setState({ storageValue: result.c[0] });
     })
+
+    this.state.web3.eth.getAccounts(async (e, accounts) => {
+      await rezcoin.createTokens(accounts[0], this.state.web3.toWei(1, 'ether'))
+      let balance = await rezcoin.getBalance(accounts[0])
+      return await this.setState({ tokenBalance: balance.toString(10) });
+    })
   }
 
   render() {
@@ -76,6 +83,7 @@ class App extends Component {
               <p>If your contracts compiled and migrated successfully, below will show a stored value of 5 (by default).</p>
               <p>Try changing the value stored on <strong>line 59</strong> of App.js.</p>
               <p>The stored value is: {this.state.storageValue}</p>
+              <p>Token ownership is: {this.state.tokenBalance}</p>
             </div>
           </div>
         </main>

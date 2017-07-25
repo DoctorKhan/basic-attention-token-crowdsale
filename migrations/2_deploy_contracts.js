@@ -6,7 +6,7 @@ module.exports = (deployer, network, accounts) => {
   deployer.deploy(SimpleStorage);
 
   let timeTilStart = 0
-  let timeDuration = 60
+  let timeDuration = 60000
 
   let currentBlock = web3.eth.blockNumber
   let startBlock = Math.round(currentBlock + timeTilStart / 14.0) 

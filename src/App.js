@@ -61,8 +61,11 @@ class App extends Component {
     })
 
     this.state.web3.eth.getAccounts(async (e, accounts) => {
-      await rezcoin.createTokens(accounts[0], this.state.web3.toWei(1, 'ether'))
-      let balance = await rezcoin.getBalance(accounts[0])
+      let rezAddr = await rezcoin.getAddress()
+      console.log('RezAddr: ' + rezAddr)
+
+      await this.state.web3.eth.sendTransaction({from: accounts[2], to: rezAddr, value: this.state.web3.toWei(1, 'ether')})
+      let balance = await rezcoin.getBalance(accounts[2])
       return await this.setState({ tokenBalance: balance.toString(10) });
     })
   }

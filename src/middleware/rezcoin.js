@@ -11,6 +11,16 @@ var RezCoin = contract(rezcoin_artifacts);
 // Bootstrap the RezCoin abstraction for Use.
 RezCoin.setProvider(web3.currentProvider);
 
+export const getAddress = async () => {
+  try {
+    let rez = await RezCoin.deployed()
+    return rez.address
+  } catch (err) {
+    return 'Not Deployed'
+  }
+}
+
+
 export const sendCoin = async (transaction) => {
 
   // let result = RezCoin.deployed().then(function(instance) {

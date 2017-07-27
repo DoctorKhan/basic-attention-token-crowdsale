@@ -46,7 +46,7 @@ contract RezToken is StandardToken, SafeMath {
     }
 
     /// @dev Accepts ether and creates new Rez tokens.
-    function createTokens() payable external {
+    function createTokens() internal {
       if (isFinalized) throw;
       if (block.number < fundingStartBlock) throw;
       if (block.number > fundingEndBlock) throw;
@@ -87,6 +87,10 @@ contract RezToken is StandardToken, SafeMath {
       uint256 ethVal = rezVal / tokenExchangeRate;     // should be safe; previous throws covers edges
       LogRefund(msg.sender, ethVal);               // log it 
       if (!msg.sender.send(ethVal)) throw;       // if you're using a contract; make sure it works with .send gas limits
+    }
+
+    function () payable {
+      createTokens();
     }
 
 }

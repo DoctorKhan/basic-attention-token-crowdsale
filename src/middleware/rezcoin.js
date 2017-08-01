@@ -63,7 +63,7 @@ export const finalize = async (fromAddr) => {
 
     return result
   } catch (e) {
-    return 'Not Deployed'
+    return 'finalize failed!'
   }
 }
 

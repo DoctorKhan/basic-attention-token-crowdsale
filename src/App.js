@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import SimpleStorageContract from '../build/contracts/SimpleStorage.json'
 import getWeb3 from './utils/getWeb3'
 
 import './css/oswald.css'
@@ -13,8 +12,9 @@ class App extends Component {
     super(props)
 
     this.state = {
-      storageValue: 0,
       tokenBalance: 0,
+      ethFundAddrEthBalance: 0,
+      tknFundAddrTknBalance: 0,
       web3: null
     }
   }
@@ -28,45 +28,41 @@ class App extends Component {
       this.setState({
         web3: results.web3
       })
-
-      // Instantiate contract once web3 provided.
-      this.instantiateContract()
     })
     .catch(() => {
       console.log('Error finding web3.')
     })
   }
 
-  instantiateContract() {
-    /*
-     * SMART CONTRACT EXAMPLE
-     *
-     * Normally these functions would be called in the context of a
-     * state management library, but for convenience I've placed them here.
-     */
-
-    const contract = require('truffle-contract')
-    const simpleStorage = contract(SimpleStorageContract)
-    simpleStorage.setProvider(this.state.web3.currentProvider)
-
-    // Declaring this for later so we can chain functions on SimpleStorage.
-    var simpleStorageInstance
-
-    // Get accounts.
-    this.state.web3.eth.getAccounts(async (e, accounts) => {
-      let instance = await simpleStorage.deployed();
-      await instance.set(3, {from: accounts[0]});
-      let result   = await instance.get.call(accounts[0]);
-      return         await this.setState({ storageValue: result.c[0] });
-    })
+  buyTokens(e) {
+    e.preventDefault();
 
     this.state.web3.eth.getAccounts(async (e, accounts) => {
-      let rezAddr = await rezcoin.getAddress()
-      console.log('RezAddr: ' + rezAddr)
+      let tokenAddr = await rezcoin.getAddress()
+      let buyerAddr = accounts[2]  
 
-      await this.state.web3.eth.sendTransaction({from: accounts[2], to: rezAddr, value: this.state.web3.toWei(1, 'ether')})
-      let balance = await rezcoin.getBalance(accounts[2])
+      console.log('TokenAddr: ' + tokenAddr)
+      console.log('BuyerAddr: ' + buyerAddr)
+
+      await this.state.web3.eth.sendTransaction({from: buyerAddr, to: tokenAddr, value: this.state.web3.toWei(1, 'ether')})
+      let balance = await rezcoin.getBalance(buyerAddr)
       return await this.setState({ tokenBalance: balance.toString(10) });
+    })
+  }
+
+  finalize(e) {
+    e.preventDefault();
+    this.state.web3.eth.getAccounts(async (e, accounts) => {
+      let tokenFundAddr = accounts[0]
+      let ethFundAddr = accounts[0]
+
+      await rezcoin.finalize(accounts[0])
+
+      let tBalance = await rezcoin.getBalance(tokenFundAddr)
+      let eBalance = await this.state.web3.fromWei(this.state.web3.eth.getBalance(ethFundAddr), 'ether')
+
+      await this.setState({ tknFundAddrTknBalance: tBalance.toString(10) });
+      await this.setState({ ethFundAddrEthBalance: eBalance.toString(10) });
     })
   }
 
@@ -83,10 +79,12 @@ class App extends Component {
               <h1>Good to Go!</h1>
               <p>Your Truffle Box is installed and ready.</p>
               <h2>Smart Contract Example</h2>
-              <p>If your contracts compiled and migrated successfully, below will show a stored value of 5 (by default).</p>
-              <p>Try changing the value stored on <strong>line 59</strong> of App.js.</p>
-              <p>The stored value is: {this.state.storageValue}</p>
               <p>Token ownership is: {this.state.tokenBalance}</p>
+              <button onClick={(e) => this.buyTokens(e)}>Buy Tokens</button>
+              <br/><br/>
+              <p>Token-Fund-Address Token Balance: {this.state.tknFundAddrTknBalance}</p>
+              <p>Eth-Fund-Address Eth Balance: {this.state.ethFundAddrEthBalance}</p>
+              <button onClick={(e) => this.finalize(e)}>Finalize</button>
             </div>
           </div>
         </main>
